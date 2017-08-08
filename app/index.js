@@ -1,7 +1,7 @@
 import React from 'react'
 import ReactDOM from 'react-dom'
 import Grid from './grid'
-import utils from './utils'
+import { generateMines, generateCells } from './utils'
 
 const LEVELS = {
   beginner: {
@@ -34,10 +34,12 @@ class App extends React.Component {
 
   newGame() {
     const { rows, columns, mines } = LEVELS[this.state.level]
-    const minesList = utils.generateMines(rows, columns, mines)
-    const cells = utils.generateCells(rows, columns, minesList)
+    const minesList = generateMines(rows, columns, mines)
+    const cells = generateCells(rows, columns, minesList)
+    /*console.log(minesList)
+    console.log(cells)*/
 
-    this.setState({ cells })
+    /*this.setState({ cells })*/
   }
 
   onClickCell(cell) {

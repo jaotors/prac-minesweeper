@@ -1,40 +1,65 @@
 /**
  * generates random mine coordinates
  */
-function getRandomCoordinates(rowCount, columnCount, mines) {
-  const x = Math.floor(Math.random() * (0 - rowCount)) + 0
-  const y = Math.floor(Math.random() * (0 - columnCount)) + 0
+function getRandomCoordinates(...param) {
+  const [rowCount, columnCount, mines] = param
+  const x = Math.floor(Math.random() * (rowCount-1))
+  const y = Math.floor(Math.random() * (columnCount-1))
 
-  const coordinates = `${x},${y}`
+  const randomMine = `${x},${y}`
 
-  if(mines.some(coord => coord !== coordinates)) {
-    return coordinates
+  if(!(mines.some(coord => coord !== randomMine))) {
+    return randomMine
   }
-
   return getRandomCoordinates(rowCount, columnCount, mines)
 }
 
-export function generateMines(rowCount, columnCount, mineCount) {
+export const generateMines = (rowCount, columnCount, mineCount) => {
   const mines = []
   /*
    * TODO create a method to generate an array of random
    * coordinates with uniform distribution e.g. ['0,1', '10,9', ...]
    */
-
   for(let i = 0; i < mineCount; i++) {
-    const coordinates = getRandomCoordinates(rowCount, columnCount)
+    const coordinates = getRandomCoordinates(rowCount, columnCount, mines)
+    console.log(coordinates)
     mines.push(coordinates)
   }
-
   return mines
 }
 
 /**
  * generates cells with with mines
  */
-export function generateCells(rowCount, columnCount, mines) {
-  const cells = []
+function getNearbyMines(...param) {
+  const [isMine, x, y, rowCount, columnCount, mines] = param
+  let nearby = 0
+  if(!isMine) {
+    let tempX = x
+    let tempY = y
 
+    tempX -= 2
+    tempY -= 1
+
+    for(let i = 0; i < 3; i++) {
+      tempX++
+      for(let j = 0; j < 3; j++) {
+        mines.map(mine => {
+          if((tempX > -1 || tempY > -1) || (tempX < columnCount || tempY < columnCount)) {
+            if(`${tempX},${tempY}` === mine) {
+              nearby++
+            }
+          }
+          tempY++
+        })
+      }
+    }
+  }
+
+  return nearby
+}
+
+export const generateCells = (rowCount, columnCount, mines) => {
   /*
    * TODO create a method to generate an array of cells
    * with this structure:
@@ -58,8 +83,20 @@ export function generateCells(rowCount, columnCount, mines) {
     isMine = (bool) is it a mine?
     nearby = (int) number of surrounding mines
     status = (string, open|close) by default, it should be closed
+  */
+  const cells = []
+  const arrX = []
 
-   */
+  for(let x = 0; x < rowCount; x++) {
+    for(let y = 0; y < columnCount; y++) {
+      const key = `${x},${y}`
+      const isMine = mines.some(mine => mine === key)
+      const nearby = getNearbyMines(isMine, x, y, rowCount, columnCount, mines)
+      const status = `close`
+      arrX.push({key, isMine, nearby, status})
+    }
+    cells.push(arrX)
+  }
 
   return cells
 }
@@ -67,7 +104,7 @@ export function generateCells(rowCount, columnCount, mines) {
 /**
  * returns the neighboring cells
  */
-export function getNearbies(cells, row, col) {
+export const getNearbies = (cells, row, col) => {
   const nearbies = []
 
   /*
