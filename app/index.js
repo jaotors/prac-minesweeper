@@ -51,6 +51,12 @@ class App extends React.Component {
   }
 
   onClickCell(cell) {
+    /*
+     * TODO handle click of cell
+     * done - open if close
+     *      - open ALL nearby cells if there are no nearby mines, until there's a number.
+     * done - display game over if the cell is a mine and restrict clicking the grid
+     */
     const { rows, columns, mines } = LEVELS[this.state.level]
     const gameover = (cell.isMine) ? true : false
     const cells = this.state.cells.map(cel => {
@@ -77,12 +83,6 @@ class App extends React.Component {
       gameover,
       winner
     })
-    /*
-     * TODO handle click of cell
-     *      - open if close
-     *      - open ALL nearby cells if there are no nearby mines, until there's a number.
-     *      - display game over if the cell is a mine and restrict clicking the grid
-     */
   }
 
   render() {
