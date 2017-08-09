@@ -21,8 +21,8 @@ export default class Cell extends React.Component {
     return {
       cell: {
         verticalAlign: 'top',
-        width: '50px',
-        height: '50px',
+        width: '40px',
+        height: '40px',
         fontSize: '14px',
         textAlign: 'center',
         outline: 'none',
