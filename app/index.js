@@ -1,7 +1,7 @@
 import React from 'react'
 import ReactDOM from 'react-dom'
 import Grid from './grid'
-import { generateMines, generateCells } from './utils'
+import { generateMines, generateCells, getNearbies } from './utils'
 
 const LEVELS = {
   beginner: {
@@ -14,7 +14,12 @@ const LEVELS = {
 const styles = {
   newGame: {
     fontSize: '20px',
-    padding: '10px 25px'
+    padding: '10px 25px',
+    marginRight: '10px'
+  },
+  row: {
+    display: 'flex',
+    alignItems: 'center'
   }
 }
 
@@ -22,9 +27,11 @@ class App extends React.Component {
   constructor(props) {
     super(props)
 
-    this.state = { 
+    this.state = {
       cells: [], 
-      level: 'beginner' 
+      level: 'beginner',
+      gameover: false,
+      winner: false,
     }
   }
 
@@ -36,13 +43,40 @@ class App extends React.Component {
     const { rows, columns, mines } = LEVELS[this.state.level]
     const minesList = generateMines(rows, columns, mines)
     const cells = generateCells(rows, columns, minesList)
-    /*console.log(minesList)
-    console.log(cells)*/
 
-    /*this.setState({ cells })*/
+    this.setState({
+      cells,
+      gameover: false
+    })
   }
 
   onClickCell(cell) {
+    const { rows, columns, mines } = LEVELS[this.state.level]
+    const gameover = (cell.isMine) ? true : false
+    const cells = this.state.cells.map(cel => {
+      return (
+        cel.reduce((container, c) => {
+          if(c.key === cell.key) {
+            c.status = `open`
+          }
+          return container.concat(c)
+        },[])
+      )
+    })
+
+    const check = this.state.cells.reduce((container, cell) => {
+      return container.concat(cell)
+    }, []).filter(cell => {
+      return cell.status === `open` && !cell.isMine
+    })
+    const tilesToBeat = (rows * columns) - mines
+    const winner = check.length === tilesToBeat
+
+    this.setState({
+      cells,
+      gameover,
+      winner
+    })
     /*
      * TODO handle click of cell
      *      - open if close
@@ -58,15 +92,22 @@ class App extends React.Component {
 
         <Grid
           cells={this.state.cells}
+          gameover={this.state.gameover}
           onClickCell={cell => this.onClickCell(cell)}
         />
 
-        <button
-          style={styles.newGame}
-          onClick={() => this.newGame()}
-        >
-          {'New Game'}
-        </button>
+        <div style={styles.row} >
+          <button
+            style={styles.newGame}
+            onClick={() => this.newGame()}
+          >
+            {'New Game'}
+          </button>
+          {(this.state.gameover) &&
+              <h2>GAME OVER</h2> }
+          {(this.state.winner) &&
+              <h2>WINNER</h2> }
+        </div>
       </div>
     )
   }

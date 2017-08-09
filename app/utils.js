@@ -3,12 +3,12 @@
  */
 function getRandomCoordinates(...param) {
   const [rowCount, columnCount, mines] = param
-  const x = Math.floor(Math.random() * (rowCount-1))
-  const y = Math.floor(Math.random() * (columnCount-1))
+  const x = Math.floor(Math.random() * (rowCount))
+  const y = Math.floor(Math.random() * (columnCount))
 
   const randomMine = `${x},${y}`
 
-  if(!(mines.some(coord => coord !== randomMine))) {
+  if(!(mines.some(coord => coord === randomMine))) {
     return randomMine
   }
   return getRandomCoordinates(rowCount, columnCount, mines)
@@ -22,7 +22,6 @@ export const generateMines = (rowCount, columnCount, mineCount) => {
    */
   for(let i = 0; i < mineCount; i++) {
     const coordinates = getRandomCoordinates(rowCount, columnCount, mines)
-    console.log(coordinates)
     mines.push(coordinates)
   }
   return mines
@@ -35,22 +34,16 @@ function getNearbyMines(...param) {
   const [isMine, x, y, rowCount, columnCount, mines] = param
   let nearby = 0
   if(!isMine) {
-    let tempX = x
-    let tempY = y
-
-    tempX -= 2
-    tempY -= 1
-
-    for(let i = 0; i < 3; i++) {
-      tempX++
-      for(let j = 0; j < 3; j++) {
+    for(let i = -1; i < 2; i++) {
+      for(let j = -1; j < 2; j++) {
         mines.map(mine => {
+          const tempX = x + i
+          const tempY = y + j
           if((tempX > -1 || tempY > -1) || (tempX < columnCount || tempY < columnCount)) {
             if(`${tempX},${tempY}` === mine) {
               nearby++
             }
           }
-          tempY++
         })
       }
     }
@@ -85,15 +78,15 @@ export const generateCells = (rowCount, columnCount, mines) => {
     status = (string, open|close) by default, it should be closed
   */
   const cells = []
-  const arrX = []
 
   for(let x = 0; x < rowCount; x++) {
+    const arrX = []
     for(let y = 0; y < columnCount; y++) {
       const key = `${x},${y}`
       const isMine = mines.some(mine => mine === key)
       const nearby = getNearbyMines(isMine, x, y, rowCount, columnCount, mines)
       const status = `close`
-      arrX.push({key, isMine, nearby, status})
+      arrX.push({key, isMine, x, y, nearby, status})
     }
     cells.push(arrX)
   }
