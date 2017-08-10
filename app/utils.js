@@ -101,8 +101,10 @@ export const getNearbies = (cells, row, col) => {
   const nearbies = []
 
   /*
-   * TODO create a method to get the nearby cells
-   */
+  * TODO create a method to get the nearby cells
+  */
+  
+  
 
   return nearbies
 }
