@@ -50,6 +50,22 @@ class App extends React.Component {
     })
   }
 
+  openNearby(cell, cells) {
+    const nearbies = getNearbies(cells, cell.x, cell.y)
+    cells[cell.x][cell.y].status = `open`
+    nearbies.map(nearby => {
+      if(nearby.status === `close`) {
+        if(nearby.nearby > 0) {
+          cells[nearby.x][nearby.y].status = `open`
+        } else {
+          cells = this.openNearby(nearby, cells)
+        }
+      }
+    })
+
+    return cells
+  }
+
   onClickCell(cell) {
     /*
      * TODO handle click of cell
@@ -59,16 +75,12 @@ class App extends React.Component {
      */
     const { rows, columns, mines } = LEVELS[this.state.level]
     const gameover = (cell.isMine) ? true : false
-    const cells = this.state.cells.map(cel => {
-      return (
-        cel.reduce((container, c) => {
-          if(c.key === cell.key) {
-            c.status = `open`
-          }
-          return container.concat(c)
-        },[])
-      )
-    })
+    let cells = this.state.cells
+
+    cells[cell.x][cell.y].status = `open`
+    if(cell.nearby === 0 && !cell.isMine ) {
+      cells = this.openNearby(cell, cells)
+    }
 
     const check = this.state.cells.reduce((container, cell) => {
       return container.concat(cell)
@@ -93,6 +105,7 @@ class App extends React.Component {
         <Grid
           cells={this.state.cells}
           gameover={this.state.gameover}
+          winner={this.state.winner}
           onClickCell={cell => this.onClickCell(cell)}
         />
 

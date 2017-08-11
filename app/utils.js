@@ -27,11 +27,18 @@ export const generateMines = (rowCount, columnCount, mineCount) => {
   return mines
 }
 
-/**
+/**1
  * generates cells with with mines
  */
 function getNearbyMines(...param) {
-  const [isMine, x, y, rowCount, columnCount, mines] = param
+  const [
+    isMine,
+    x,
+    y,
+    rowCount,
+    columnCount,
+    mines
+  ] = param
   let nearby = 0
   if(!isMine) {
     for(let i = -1; i < 2; i++) {
@@ -39,7 +46,7 @@ function getNearbyMines(...param) {
         mines.map(mine => {
           const tempX = x + i
           const tempY = y + j
-          if((tempX > -1 || tempY > -1) || (tempX < columnCount || tempY < columnCount)) {
+          if((tempX > -1 && tempY > -1) && (tempX < columnCount && tempY < columnCount)) {
             if(`${tempX},${tempY}` === mine) {
               nearby++
             }
@@ -99,12 +106,19 @@ export const generateCells = (rowCount, columnCount, mines) => {
  */
 export const getNearbies = (cells, row, col) => {
   const nearbies = []
-
   /*
   * TODO create a method to get the nearby cells
   */
-  
-  
+  for(let i = -1; i < 2; i++) {
+    for(let j = -1; j < 2; j++) {
+      const tempX = row + i
+      const tempY = col + j
+      if((tempX > -1 && tempY > -1) && (tempX < cells.length && tempY < cells[0].length) && (tempX !== row || tempY !== col)) {
+        const cell = cells[tempX][tempY]
+        nearbies.push(cell)
+      }
+    }
+  }
 
   return nearbies
 }

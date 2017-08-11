@@ -2,7 +2,7 @@ import React from 'react'
 
 export default class Cell extends React.Component {
   render() {
-    const value = this.props.isMine ? 'X' : this.props.nearby
+    const value = this.props.isMine ? 'X' : this.props.nearby > 0 ? this.props.nearby : ''
     const styles = this.createStyles()
 
     return (
@@ -10,9 +10,9 @@ export default class Cell extends React.Component {
         style={styles.cell}
         status={this.props.status}
         onClick={() => this.props.onClick()}
-        disabled={(this.props.status === 'open' ? true : false) || (this.props.gameover) ? true : false}
+        disabled={(this.props.status === 'open' ? true : false) || (this.props.gameover) ? true : false || (this.props.winner) ? true : false}
       >
-        {this.props.status === 'open' && !!value ? value : ''}
+        {this.props.status === 'open' && !!value ? value : this.props.gameover ? value : ''}
       </button>
     )
   }
